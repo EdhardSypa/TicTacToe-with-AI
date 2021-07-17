@@ -1,22 +1,15 @@
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class Main {
 	static final char[][] FIELD = new char[3][3] ;
-    static String state = "Game not finished";
+    static String state = " ";
     static ArrayList<Point> xCoords = new ArrayList<>();
     static ArrayList<Point> oCoords = new ArrayList<>();
 
-    static void fillField(String arrange) { 							// Method for filling a field with received data from a variable "arrange"
+    static void fillField() { 							// Method for filling a field with received data from a variable "arrange"
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                FIELD[i][j] = arrange.charAt(3 * i + j);
-                if (FIELD[i][j] == 'X') {                   
-                    xCoords.add(new Point(i, j));
-                } else if (FIELD[i][j] == 'O') {
-                    oCoords.add(new Point(i, j));
-                }
+                FIELD[i][j] = ' ';
             }
         }
     }
@@ -58,25 +51,19 @@ public class Main {
             return;
         }
 
-        if (xCoords.size() <= oCoords.size()) {							// Check whose move and fill in the field
-            FIELD[x][y] = 'X';
-            xCoords.add(new Point(x, y));
-        } else {
-            FIELD[x][y] = 'O';
-            oCoords.add(new Point(x, y));
-        }
+        FIELD[x][y] = 'X';
 
     }
     
-    static void printState() {											// Method for print the winner
+    static String printState() {	// Method for print the winner
         if (isWinner(FIELD, 'X')) {
-            state = "X wins";
+            state = "X";
         } else if (isWinner(FIELD, 'O')) {
-            state = "O wins";
+            state = "O";
         } else if (xCoords.size() + oCoords.size() == 9) {
-            state = "Draw";
+            state = "D";
         }
-     System.out.println(state);
+        return state;
     }
     
     static boolean isWinner(char[][] field, char symbol) {						// Method for checking the winner, it's check coordinates and symbol 'X' or 'O'
@@ -101,16 +88,53 @@ public class Main {
     	return false;
     }
     
+    static void easyMove() {
+    	Random random = new Random();
+    	int fMove, sMove;
+    	
+    	while(true) {
+    		fMove = random.nextInt(3);
+    		sMove = random.nextInt(3);
+    		if(isWalidComputerTurn(fMove, sMove)) {
+    			FIELD[fMove][sMove] = 'O';
+    			break;
+    		}
+    	}
+    }
+    
+    static boolean isWalidComputerTurn(int a, int b) {
+    	boolean result = true;
+    	
+    	if(FIELD[a][b] != ' ') {
+    		result = false;
+    	}
+    	
+    	return result;
+    }
+    
     public static void main(String[] args) {
         var scanner = new Scanner(System.in);
-        System.out.print("Enter the cells: ");
-        String arrange = scanner.nextLine();
-        fillField(arrange.replace("_", " ")); 										//Fill in the field with the received value from the variable arrange
+        fillField(); 										//Fill in the field with the received value from the variable arrange
 
-        printField();
-        enterCoords();
-        printField();
-        printState();
+        while(true) {
+        	printField();
+            enterCoords();
+            printField();
+            if(printState() == "X") {
+            	System.out.println("X wins");
+            	break;
+            } else if(printState() == "O") {
+            	System.out.println("O wins");
+            	break;
+            } else if(printState() == "D") {
+            	System.out.println("Draw");
+            	break;
+            }
+            	
+            System.out.println("Making move level \"easy\"");
+            easyMove();
+        }
+        
     }
 }
 
